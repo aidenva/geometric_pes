@@ -1,0 +1,132 @@
+# Every parameter the experiments use. Reduced units: mass 1, energies in units of a reference
+# k_B T = 1. Change values here, not in the code; geometric_pes.config loads this file
+# (or the one named by the GEOMETRIC_PES_CONFIG environment variable).
+
+[paths]
+results = "results"          # experiment outputs (JSON summaries, raw per-run .npz)
+cache = "results/cache"      # basin maps and master-equation bases, keyed by surface name
+
+[run]                        # defaults shared by the drain experiments
+dt = 0.01                    # velocity-Verlet time step
+t_obs = 400.0                # observation time tau_obs (> 250 product-well periods)
+start_above_ts1 = 1.0        # flux ensemble at E = E_TS1 + this
+ohmic_cutoff = 5.0           # omega_c of the ohmic drain
+nproc = 7                    # worker processes
+hot_y_share = 0.5            # hot exchange coordinate: at least this share of x, y kinetic energy in y
+
+# ---------------------------------------------------------------- surfaces
+# Fields not given take the defaults of geometric_pes.surfaces.branching.Surface. A variant may
+# start from another with base = "...".
+[surface.A]                  # straight valley with a VRI; P+ deeper and wider than P-
+name = "A_vri_straight"
+b_plus = 3.0
+b_minus = 6.0
+eps = 0.3
+
+[surface.B]                  # same stationary points as A; the valley bends before the ridge
+name = "B_vri_bent"
+b_plus = 3.0
+b_minus = 6.0
+eps = 0.3
+A_c = -0.8
+xc = 0.35
+wc = 0.3
+
+[surface.C]                  # no VRI: a shallow intermediate with two exit saddles (control)
+name = "C_intermediate"
+kP = 28.8                    # e s1 s2 with e = 20, s1 = 0.6, s2 = 2.4
+b_plus = -60.0               # -e (s1 + s2)
+b_minus = -60.0
+e = 20.0
+eps = -0.6
+
+[surface.Aup1]               # A with an endothermic step (uphill transfer)
+base = "A"
+name = "Aup1_uphill"
+Delta = -7.5
+
+[surface.Aup2]
+base = "A"
+name = "Aup2_uphill"
+Delta = -10.5
+
+# ---------------------------------------------------------------- experiments
+[decision]                   # closed system (no drain): the geometric decision phi_1
+surfaces = ["A", "B"]
+ntraj = 4000
+seed = 11
+
+[drain_modes]                # modes at rest: is the decision kept?
+surfaces = ["A", "B"]
+N = [0, 4, 16, 64]
+eta = [1.0, 0.2]
+ntraj = 3000
+seed = 21
+
+[thermal_drain]              # classical thermal modes: which rung is lost first?
+surface = "A"
+N = 64
+eta = 1.0
+theta = [0.0, 0.02, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.5]
+ntraj = 2000
+seed = 21
+
+[quantum_drain]              # QCT-Bose (frozen limit) and the master-equation exchange time
+surface = "A"
+N = 64
+eta = 1.0
+hbar = [0.25, 0.5]
+theta = [0.0, 0.05, 0.1, 0.2]
+ntraj = 2000
+seed = 21
+# production master-equation settings: coherence window delta and energy cut per hbar
+master_equation = [
+    { hbar = 0.5, delta = 40.0, ecut = -8.0 },
+    { hbar = 0.25, delta = 1.0, ecut = -8.0 },
+]
+
+[timescales]                 # decision, drain and exchange times on the four surfaces
+surfaces = ["A", "B", "Aup1", "Aup2"]
+N = [4, 8, 16, 32, 64]
+eta = [0.05, 0.1, 0.2, 0.5, 1.0, 2.0]
+ntraj = 1000
+seed = 31
+
+[generalization]             # random configurations never used for fitting
+n_configs = 220
+ntraj = 600
+dev_seed = 2026              # first set: used to choose the predictors
+fresh_seed = 7               # fresh set: used only for scoring
+survive_r = 0.5              # "the decision survives" if trajectory memory r >= this
+# surface draws (uniform), perturbations of surface A
+kP = [-14.0, -6.0]
+b_plus = [2.5, 6.0]
+b_minus = [2.5, 6.0]
+eps = [-0.5, 0.5]
+A_c = [-0.5, 0.5]
+Delta = [-8.0, 14.0]
+start_above_ts1 = [0.5, 3.0]
+# validity of a drawn surface
+min_exchange_margin = 1.0    # start energy at least this far above the product-product saddle
+min_well_depth = 1.0         # each product well at least this deep below that saddle
+# drain draws
+spectra = ["subohmic", "ohmic", "superohmic", "drude", "random"]
+patterns = ["xy", "y", "x"]
+N = [8, 16, 32, 64]
+reorganization = [0.1, 20.0] # log-uniform
+cutoff = [2.5, 5.0, 10.0]
+
+[edge_cases]                 # misclassified cases and matched controls, rerun with recording
+ntraj = 400
+
+[uphill]                     # an endothermic transfer: held once crossed? initiated from R?
+surfaces = ["Aup1", "Aup2"]
+N = [16, 64]
+eta = [1.0, 0.2]
+theta = [0.02, 0.05, 0.1, 0.2, 0.3, 0.5]
+reactant_start_above_ts1 = [1.0, 3.0, 6.0]
+reactant_start_drains = [[0, 0.0], [16, 1.0], [64, 1.0], [64, 0.2]]
+quantum_hbar = 0.25           # QCT-Bose runs at N = 64, eta = 1
+quantum_theta = [0.0, 0.05, 0.1, 0.2]
+ntraj = 2000
+seed = 21
