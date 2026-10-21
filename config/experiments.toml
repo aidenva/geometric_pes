@@ -130,3 +130,40 @@ quantum_hbar = 0.25           # QCT-Bose runs at N = 64, eta = 1
 quantum_theta = [0.0, 0.05, 0.1, 0.2]
 ntraj = 2000
 seed = 21
+
+# ---------------------------------------------------------------- electron-transfer junction
+[junction]                   # the decision after an ET crossing (quantum and classical)
+w0 = 8.0                     # absorber strength on the product cores (shared by every method)
+periods = 8.0                # run length in units of the x vibrational period
+# split against seam-to-ridge distance d, for each coupling and mass
+distance_couplings = ["AC", "ACs", "CI"]
+distances = [-1.0, 0.0, 0.5, 1.0, 2.0, 3.0]
+masses = [16.0, 32.0]
+distance_ntraj = 8000        # classical trajectories (lower surface and surface hopping)
+# quantum-classical gap against transverse quanta n (adiabatic coupling)
+transverse_cases = [[2.0, 32.0], [0.5, 16.0], [1.0, 16.0], [2.0, 16.0]]   # [d, M]
+transverse_n = [0, 1, 2, 4]
+transverse_ntraj = 16000
+# thermal branching mode: pure states n = 0..nmax summed with p_n = (1 - e^-x) e^-nx
+thermal_cases = [
+    { coupling = "ACs", d = 2.0, M = 16.0, nmax = 27 },
+    { coupling = "CI", d = 2.0, M = 16.0, nmax = 27 },
+]
+thermal_xy = [0.2, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0]
+thermal_ntraj = 16000        # classical Wigner trajectories per x_y
+thermal_seed = 11
+# coherent superpositions (|n1> + e^{i alpha} |n2>)/sqrt 2 at equally spaced alpha
+coherent_case = { coupling = "ACs", d = 2.0, M = 16.0 }
+coherent_pairs = [[0, 1], [0, 2]]
+coherent_phases = 4
+
+[junction_drain]             # the junction (d = 2, M = 16) with N thermal drain modes
+couplings = ["CI", "ACs"]
+N = 64
+gamma = [0.05, 0.01]         # friction on the mass-M coordinates
+theta = [0.0, 0.05, 0.1, 0.2, 0.3, 0.5]
+cutoff = 0.5
+ntraj = 3000
+periods = 60
+seed = 31
+dt_fraction = { ACs = 400, CI = 800 }   # time step = vibrational period / this

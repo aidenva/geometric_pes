@@ -16,7 +16,7 @@ from .landscape import Landscape
 
 
 def initial_packet(L, p=None):
-    """Centre, widths and momentum of the initial Gaussian.
+    """Center, widths and momentum of the initial Gaussian.
 
     Widths default to the ground-state widths of the reactant well (from the
     E_- Hessian); momentum points from the reactant minimum to the lowest

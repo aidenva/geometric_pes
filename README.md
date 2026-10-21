@@ -35,7 +35,9 @@ python experiments/generalization.py
 ```
 
 `generalization.py` reuses the `timescales.py` runs as its training grid, and `edge_cases.py`
-reads the `generalization.py` summary; the other drivers are independent. Full runs use the
+reads the `generalization.py` summary; the other drivers are independent. `junction_decision.py` runs
+in four parts (`--part distance|transverse|thermal|coherent`); its quantum runs on the propagation grid
+dominate the cost. Full runs use the
 worker count in `[run] nproc` (override with `--nproc`). The largest, `generalization.py`, is
 about an hour on seven cores; `quantum_drain.py` spends most of its time in the master equation.
 

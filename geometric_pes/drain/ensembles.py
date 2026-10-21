@@ -1,6 +1,6 @@
 """Start ensembles and basin cores.
 
-flux_sample    microcanonical flux ensemble on the TS1 dividing line (towards products)
+flux_sample    microcanonical flux ensemble on the TS1 dividing line (toward products)
 rstart_sample  microcanonical ensemble inside the reactant basin (uphill-transfer test)
 core_levels    energy levels defining each basin's core (F_CORE of the way from the minimum to
                its lowest exit saddle; P+/P- use the product-product saddle)
@@ -13,7 +13,7 @@ F_CORE = 0.5
 
 
 def flux_sample(S, E, N, rng):
-    """Microcanonical flux ensemble on the TS1 line at energy E (towards products)."""
+    """Microcanonical flux ensemble on the TS1 line at energy E (toward products)."""
     s = np.linspace(-3, 3, 6001)
     pts = S.ts1["xy"][:, None] + np.outer(S.t, s)
     K = np.clip(E - V(pts[0], pts[1], S.p), 0, None)

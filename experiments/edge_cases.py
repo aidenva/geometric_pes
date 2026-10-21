@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Edge cases of the a-priori criterion. Every case it misclassifies in the generalization test is
+"""Edge cases of the a priori criterion. Every case it misclassifies in the generalization test is
 rerun with full recording, together with the correctly classified case nearest in
 (log chi_ex, log f_ret) with the same prediction, to see what actually happened to the decision:
 when the switches occur, and where the energy sits (x or y) while it is above the saddle.
@@ -38,7 +38,7 @@ def select(gen):
 def config_of(tag, gen_settings):
     which, i = tag[:-3], int(tag[-3:])
     seed = gen_settings["dev_seed"] if which == "dev" else gen_settings["fresh_seed"]
-    return [c for c in test_configs(seed, which) if c["i"] == i][0]
+    return [c for c in test_configs(seed, which, i + 1) if c["i"] == i][0]
 
 
 def job(args):

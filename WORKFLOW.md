@@ -11,16 +11,18 @@ geometric_pes/
 ├── integrators.py       velocity Verlet / BAOAB / Brownian steps; ohmic Caldeira–Leggett modes
 ├── io.py                save .npz / .json with their parameters and git version
 ├── random_configs.py    random surfaces, spectra, couplings for the out-of-sample test
+├── junction_decision.py junction cases, transverse / thermal / coherent initial states, thermal sums
 ├── surfaces/
 │   ├── branching.py     the branching surface V(x, y): VRI, product wells, valley bend
 │   ├── basins.py        Setup: stationary points, labels, basin map, commitment levels
-│   └── junction.py      two-state ET junction (diabats, adiabats, CI / avoided crossing)
+│   └── junction.py      two-state ET junction: surfaces, grid, quantum and classical engines
 ├── drain/
 │   ├── ensembles.py     flux ensemble on TS1, reactant-basin ensemble, basin cores
 │   ├── modes.py         spectral densities, coupling patterns, friction on the exchange mode
 │   ├── statistics.py    2D and many-mode references (classical, quantum), TST rates
 │   ├── dynamics.py      run_rest, run_thermal, run_qct_bose, run_rstart
 │   ├── metrics.py       φ₁, memory m and r, inversion ι, back-transfer B, timescales, levels
+│   ├── junction_drain.py   the junction coupled to N drain modes (surface hopping at the CI)
 │   └── master_equation.py  Bloch–Redfield exchange time of relaxed products
 └── two_state/           the original two-state, two-coordinate funnel model
 experiments/             one driver per study (all accept --quick)
@@ -44,6 +46,8 @@ flowchart LR
     gen[generalization]
     edge[edge_cases]
     up[uphill]
+    jdec[junction_decision]
+    jdr[junction_drain]
   end
   subgraph DRAIN[geometric_pes.drain]
     dyn[dynamics]
@@ -59,6 +63,9 @@ flowchart LR
   end
   rc[random_configs]
   integ[integrators]
+  jd[junction_decision]
+  jn[surfaces.junction]
+  jdm[drain.junction_drain]
 
   dec --> dyn & met & stat
   dm --> dyn & met & stat
@@ -70,6 +77,10 @@ flowchart LR
   edge --> gen
   edge --> rc & mod & dyn
   up --> dyn & met & stat
+  jdec --> jd & jn
+  jdr --> jdm & met
+  jdm --> jn & jd & integ
+  jd --> jn
 
   dyn --> ens & stat & integ & bas & br
   me --> stat & mod
@@ -90,8 +101,10 @@ flowchart LR
 | `quantum_drain.py` | Do quantum modes keep it, and how fast do relaxed products exchange? | `dynamics.run_qct_bose`, `metrics.summarize` (both references), `master_equation.redfield_case` | `[quantum_drain]` |
 | `timescales.py` | How do decision, drain and exchange times compare? | `dynamics.run_rest`, `metrics.metrics`, `metrics.exchange_time`, `statistics.p_return` | `[timescales]` |
 | `generalization.py` | Does the competition predict the outcome on surfaces, spectra and couplings it was not fitted to? | `random_configs.test_configs` / `valid`, `modes.modes`, `modes.gamma_exchange`, `dynamics.run_rest`, `metrics.metrics`; the training grid is `timescales` | `[generalization]` |
-| `edge_cases.py` | What happened in the cases the a-priori criterion gets wrong? | `dynamics.run_rest(record=True)`, `modes.modes`; reads the `generalization` summary | `[edge_cases]` |
+| `edge_cases.py` | What happened in the cases the *a priori* criterion gets wrong? | `dynamics.run_rest(record=True)`, `modes.modes`; reads the `generalization` summary | `[edge_cases]` |
 | `uphill.py` | Is an endothermic transfer held once crossed, or initiated from R? | `dynamics.run_thermal`, `run_qct_bose`, `run_rstart`, `metrics.transfer_metrics`, `statistics.reference_shares` | `[uphill]` |
+| `junction_decision.py` | After an electron-transfer crossing, can the decision be quantum? (`--part` distance, transverse, thermal, coherent) | `surfaces.junction.quantum` / `classical`, `junction_decision.params`, `pset`, `thermal_init`, `packet_xy`, `thermal` | `[junction]` |
+| `junction_drain.py` | Is a decision made after the crossing kept by the same drain? | `drain.junction_drain.run`, `metrics.summarize` | `[junction_drain]` |
 
 Run order matters only where one driver reads another's output: `generalization` reuses the
 `timescales` runs as its training grid, and `edge_cases` reads the `generalization` summary.

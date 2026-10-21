@@ -59,3 +59,14 @@ def summary(experiment, data, quick, settings_used):
     save_json(path, data, meta=dict(experiment=experiment, settings=settings_used))
     print("wrote", path)
     return path
+
+
+def cached_json(experiment, tag, quick, fn):
+    """run fn() -> dict once and keep it as JSON; return the dict"""
+    import json
+    path = os.path.join(results_dir("quick" if quick else "full", experiment), tag + ".json")
+    if not os.path.exists(path):
+        save_json(path, fn())
+    with open(path) as f:
+        d = json.load(f)
+    return d.get("data", d) if isinstance(d, dict) and "meta" in d else d

@@ -253,12 +253,12 @@ def transverse_states(G, x0, K=16):
     off = -1.0 / (2 * p.M * G.dy**2)
     H = np.diag(v - 2 * off) + np.diag(np.full(n - 1, off), 1) + np.diag(np.full(n - 1, off), -1)
     e, U = np.linalg.eigh(H)
-    U = U[:, :K] / np.sqrt(G.dy)                     # normalised: sum |phi|^2 dy = 1
+    U = U[:, :K] / np.sqrt(G.dy)                     # normalized: sum |phi|^2 dy = 1
     return e[:K], U
 
 
 def ho_state(G, n, y0, sy):
-    """Normalised harmonic eigenstate n on the y grid (stable recursion), shape (ny,)."""
+    """Normalized harmonic eigenstate n on the y grid (stable recursion), shape (ny,)."""
     xi = (G.y - y0) / (np.sqrt(2) * sy)
     h0 = np.pi ** -0.25 * np.exp(-xi**2 / 2)
     if n == 0:
@@ -274,7 +274,7 @@ def ho_state(G, n, y0, sy):
 def quantum(p, G=None, two_state=True, t_final=None, dt=None, W0=3.0, n_out=200, keep=False,
             probe_x=None, K=16, psi0=None, probe_series=0):
     """psi0: optional initial wavefunction on the grid (complex (nx, ny)), used instead
-    of the packet built from p (it is normalised here). probe_series = k > 0 also
+    of the packet built from p (it is normalized here). probe_series = k > 0 also
     records the transverse amplitudes c_0..c_{k-1}(t) at the probe every step."""
     G = G or Grid(p)
     pk = G.packet()

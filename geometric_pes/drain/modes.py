@@ -1,4 +1,4 @@
-"""Drain spectra: discretized spectral densities, coupling patterns, and the a-priori friction on
+"""Drain spectra: discretized spectral densities, coupling patterns, and the a priori friction on
 the exchange coordinate.
 
 The ohmic default (caldeira_leggett_modes, re-exported from geometric_pes.integrators) is
@@ -56,7 +56,7 @@ def exchange_modes(S):
 
 
 def gamma_exchange(w, c, which, S, frac=0.25):
-    """a-priori drain rate of the exchange mode: the Markovian friction J_ex(w)/w at the mode's
+    """a priori drain rate of the exchange mode: the Markovian friction J_ex(w)/w at the mode's
     frequency, with J_ex the spectral density projected on the mode, sum_j (c_j u_a(j))^2 / w_j
     (pi/2) delta(w - w_j), each delta broadened to a Gaussian of width frac * w_ex; averaged over
     the two wells"""

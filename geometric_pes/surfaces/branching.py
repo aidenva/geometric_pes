@@ -5,13 +5,13 @@ units of the reference k_B T = 1). x is the reaction coordinate (reactant
 R at x < 0, first transition state TS1 near x = 0, products at x > 0); y is
 the branching coordinate.
 
-    u      = y - c(x)                         valley centre line c(x)
+    u      = y - c(x)                         valley center line c(x)
     V(x,y) = U(x) + 1/2 kappa(x) u^2 + 1/4 b(x,u) u^4 + 1/6 e(x) u^6 + eps s(x) u
 
     U(x)     = Vb ((x/L)^2 - 1)^2 - Delta s_D(x)      R well, TS1, exothermic drop
     kappa(x) = kR + (kP - kR) s(x)                    y-curvature: kR > 0 before,
                                                       kP after the branching region
-    s(x)     = (1 + tanh((x - xv)/wv)) / 2            switch centred at xv
+    s(x)     = (1 + tanh((x - xv)/wv)) / 2            switch centered at xv
     c(x)     = A_c (1 + tanh((x - xc)/wc)) / 2        bend of the valley (0 = straight)
     b(x,u)   = bR + (b_+/- - bR) s(x)                 b_plus for u > 0, b_minus for u < 0:
                                                       different product shapes
@@ -47,11 +47,11 @@ class Surface:
     Vb: float = 6.0       # double-well height of U (R barrier before the drop)
     L: float = 1.5        # x length scale of U
     Delta: float = 14.0   # exothermic drop
-    wD: float = 0.5       # width of the drop switch (centred at 0)
+    wD: float = 0.5       # width of the drop switch (centered at 0)
     # branching coordinate
     kR: float = 6.0       # y curvature before the branching region
     kP: float = -10.0     # y curvature after it (< 0: VRI)
-    xv: float = 0.8       # centre of the curvature switch
+    xv: float = 0.8       # center of the curvature switch
     wv: float = 0.35
     b_plus: float = 4.0
     b_minus: float = 4.0
@@ -143,7 +143,7 @@ def classify(xy, p):
 
 
 def find_stationary(p, n_starts=400, seed=1, tol=1e-3):
-    """Multistart minimisation of |grad V|^2; keeps true roots away from the box edge."""
+    """Multistart minimization of |grad V|^2; keeps true roots away from the box edge."""
     rng = np.random.default_rng(seed)
     seeds = np.column_stack([rng.uniform(p.x_min, p.x_max, n_starts),
                              rng.uniform(p.y_min, p.y_max, n_starts)])
@@ -248,7 +248,7 @@ def vri_location(p, x_grid=None):
 
 
 def ridge_onset(p):
-    """VRI estimate on the valley centre line u = 0: kappa(x) = 0 (None if kP > 0)."""
+    """VRI estimate on the valley center line u = 0: kappa(x) = 0 (None if kP > 0)."""
     if p.kP >= 0:
         return None
     s = p.kR / (p.kR - p.kP)

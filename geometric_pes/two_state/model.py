@@ -71,7 +71,7 @@ class Params:
     prop_nx: int = 256
     prop_ny: int = 256
 
-    # Initial packet, centred on the reactant minimum of E_-
+    # Initial packet, centered on the reactant minimum of E_-
     init_state: str = "adiabatic"  # "adiabatic" (lower eigenvector) or "diabatic1"
     E_kin0: float = 0.3            # initial kinetic energy, aimed at the lowest saddle
     sigma_x: float = 0.0           # 0 -> ground-state width of the reactant well

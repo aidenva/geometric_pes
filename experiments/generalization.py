@@ -7,8 +7,8 @@ surfaces, spectra, coupling patterns and drain sizes (geometric_pes.random_confi
 is fitted on the training grid by balanced accuracy. Predictors use the energy flow only:
 
   chi + return      measured tau_drain / tau_exchange, and return fraction f_ret
-  chi_ex + return   a-priori friction on the exchange coordinate, and f_ret
-  chi_ex            a-priori alone
+  chi_ex + return   a priori friction on the exchange coordinate, and f_ret
+  chi_ex            a priori alone
   hot time          time after the decision with the x, y energy above TS12 and at least y_share
                     of the kinetic energy in y, over tau_exchange
   above time        the same without the condition on y
@@ -53,7 +53,7 @@ def train_rows(s_ts):
 
 def test_rows(which, seed, s):
     out = []
-    for c in test_configs(seed, which):
+    for c in test_configs(seed, which, s["n_configs"]):
         try:
             params, a = cached(EXP, f"{which}{c['i']:03d}", s["_quick"], None)
             pb, ab = cached(EXP, f"{which}{c['i']:03d}_bare", s["_quick"], None)
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     pool_map(timescales.job, [(j, s_ts) for j in timescales.jobs(s_ts)], args.nproc)    # training grid
     sets = {}
     for which, seed in (("dev", s["dev_seed"]), ("fresh", s["fresh_seed"])):
-        cfgs = test_configs(seed, which)
+        cfgs = test_configs(seed, which, s["n_configs"])
         pool_map(test_job, [(c, which, s) for c in cfgs], args.nproc)
     sets["train"] = [r for r in train_rows(s_ts) if np.isfinite(r["r"])]
     for which, seed in (("dev", s["dev_seed"]), ("fresh", s["fresh_seed"])):

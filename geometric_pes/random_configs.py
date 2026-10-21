@@ -32,13 +32,13 @@ def valid(p, dE):
     return E - e12 >= g["min_exchange_margin"] and depth >= g["min_well_depth"]
 
 
-def test_configs(seed=2026, prefix="gen"):
+def test_configs(seed=2026, prefix="gen", n=None):
     """parameters only (cheap and deterministic); validity is checked in the workers.
     seed 2026: the first (development) test set; seed 7: the fresh validation set"""
     g = section("generalization")
     rng = np.random.default_rng(seed)
     out = []
-    for i in range(g["n_configs"]):
+    for i in range(n if n is not None else g["n_configs"]):
         p, dE = draw_surface(i, rng, g)
         p = replace(p, name=f"{prefix}{i:03d}")
         lo, hi = g["reorganization"]
